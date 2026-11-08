@@ -139,6 +139,89 @@ h1 {
   padding-left: 20px;
 }
 
+.card ol {
+  padding-left: 20px;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 580px;
+  border-collapse: collapse;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+caption {
+  padding: 10px 0;
+  text-align: left;
+  color: var(--text);
+  font-weight: 750;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: var(--text);
+}
+
+/* Keep each purpose, recipient and basis together on narrow screens. */
+@media (max-width: 600px) {
+  .table-scroll {
+    overflow-x: visible;
+  }
+
+  .table-scroll table,
+  .table-scroll caption,
+  .table-scroll tbody,
+  .table-scroll tr,
+  .table-scroll td {
+    display: block;
+    min-width: 0;
+  }
+
+  .table-scroll thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .table-scroll tbody tr {
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+  }
+
+  .table-scroll td {
+    border: 0;
+  }
+
+  .table-scroll td + td {
+    border-top: 1px solid var(--line);
+  }
+
+  .table-scroll td::before {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-weight: 750;
+    content: attr(data-label);
+  }
+}
+
 .notice {
   border-color: rgba(215, 173, 85, 0.4);
   background: var(--gold-soft);
