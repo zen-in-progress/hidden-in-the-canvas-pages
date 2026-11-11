@@ -1,18 +1,39 @@
+/*
+ * Legal pages styled after the game's dark Material 3 theme
+ * (Assets/Scripts/UI/HiddenCanvasMaterial3Theme.cs): near-black canvas with a warm
+ * glow, gold title and primary actions, rounded surface containers, Noto Sans.
+ * The font is self-hosted so these pages make no request to a font CDN.
+ */
+@font-face {
+  font-family: "Noto Sans";
+  src: url("fonts/NotoSans-Variable-latin.woff") format("woff");
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
-  --background: #10100f;
-  --surface: #191816;
-  --surface-high: #24221f;
-  --text: #f5efe3;
-  --muted: #c8bcaa;
-  --gold: #d7ad55;
-  --gold-soft: rgba(215, 173, 85, 0.16);
-  --line: rgba(245, 239, 227, 0.14);
-  --shadow: rgba(0, 0, 0, 0.34);
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  /* Game theme tokens (Color32 values converted to hex). */
+  --background: #0f0f12;
+  --surface-low: #1f1e23;
+  --surface: #242328;
+  --surface-high: #2d2c32;
+  --surface-highest: #38363d;
+  --on-surface: #ece6e9;
+  --on-surface-variant: #cdc6ca;
+  --outline-variant: #6f686f;
+  --primary: #e5b94c;
+  --on-primary: #261d00;
+  --primary-container: #5b4813;
+  --on-primary-container: #ffdf97;
+  --line: rgba(236, 230, 233, 0.1);
+  --radius-panel: 28px;
+  --radius-control: 16px;
+  font-family: "Noto Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+
 * {
   box-sizing: border-box;
 }
@@ -23,34 +44,110 @@ html {
 }
 
 body {
-  min-height: 100%;
+  position: relative;
+  min-height: 100vh;
   margin: 0;
-  color: var(--text);
-  background:
-    radial-gradient(circle at 12% 0%, rgba(215, 173, 85, 0.16), transparent 28rem),
-    linear-gradient(180deg, #151412 0%, #0f0f0e 100%);
+  color: var(--on-surface);
+  /* No body background: the canvas colour comes from html, so the fixed z-index -1
+     light layers below are painted above it instead of being hidden behind body. */
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Background echoing the Home screen: soft light spots (::before) and gold dust specks
+ * (::after). Both layers are fixed to the viewport, sit behind the content and drift
+ * slowly with transform-only animations, which the browser composites on the GPU.
+ * They are oversized so the drift never reveals an edge.
+ */
+body::before,
+body::after {
+  position: fixed;
+  inset: -20vmax;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+}
+
+body::before {
+  background-image:
+    radial-gradient(circle at 50% 22%, rgba(229, 185, 76, 0.2), transparent 26vmax),
+    radial-gradient(circle at 24% 58%, rgba(150, 104, 40, 0.16), transparent 20vmax),
+    radial-gradient(circle at 78% 74%, rgba(150, 104, 40, 0.13), transparent 22vmax),
+    radial-gradient(circle at 70% 36%, rgba(229, 185, 76, 0.07), transparent 14vmax);
+  animation: light-drift 70s ease-in-out infinite alternate;
+}
+
+body::after {
+  background-image:
+    radial-gradient(circle, rgba(242, 202, 80, 0.55) 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(242, 202, 80, 0.3) 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(255, 223, 151, 0.4) 0.8px, transparent 1.4px),
+    radial-gradient(circle, rgba(242, 202, 80, 0.22) 1.4px, transparent 2.2px);
+  /* Unrelated tile sizes and offsets keep the specks from lining up into a visible grid. */
+  background-size: 233px 197px, 151px 263px, 337px 293px, 419px 367px;
+  background-position: 17px 41px, 89px 7px, 203px 131px, 61px 223px;
+  animation: dust-drift 120s linear infinite alternate;
+}
+
+@keyframes light-drift {
+  from {
+    transform: translate3d(-3vmax, -2vmax, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3vmax, 2vmax, 0) scale(1.08);
+  }
+}
+
+@keyframes dust-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-60px, -140px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none;
+  }
 }
 
 a {
-  color: var(--gold);
+  color: var(--primary);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--on-primary-container);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .shell {
   width: min(100%, 920px);
   margin: 0 auto;
-  padding: 24px 18px 40px;
+  padding: 24px 16px 40px;
 }
 
 .hero {
-  padding: 24px 0 18px;
+  padding: 28px 0 8px;
+  text-align: center;
 }
 
+/* Section labels in the game are small uppercase muted text ("PROGRESS"). */
 .eyebrow {
-  margin: 0 0 10px;
-  color: var(--gold);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  margin: 0 0 12px;
+  color: var(--on-surface-variant);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -61,26 +158,34 @@ p {
   overflow-wrap: anywhere;
 }
 
+/* The game title is gold Noto Sans at a regular weight, not a heavy display face. */
 h1 {
   margin: 0;
-  max-width: 12ch;
-  font-size: clamp(2.35rem, 9vw, 4.8rem);
-  line-height: 0.94;
+  color: var(--primary);
+  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  font-weight: 500;
+  line-height: 1.1;
 }
 
 .lead {
-  max-width: 680px;
-  margin: 16px 0 0;
-  color: var(--muted);
+  max-width: 620px;
+  margin: 14px auto 0;
+  color: var(--on-surface-variant);
   font-size: 1.05rem;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
+/* Navigation looks like the game's bottom bar: a rounded tray of buttons. */
 .nav {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 22px 0 0;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+  margin: 24px 0 0;
+  padding: 8px;
+  border-radius: 24px;
+  background: rgba(33, 32, 37, 0.92);
 }
 
 .nav a,
@@ -89,90 +194,180 @@ h1 {
   min-height: 44px;
   align-items: center;
   justify-content: center;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
-  font-weight: 750;
+  padding: 10px 16px;
+  border-radius: var(--radius-control);
+  color: var(--on-surface);
+  background: var(--surface-highest);
+  font-weight: 600;
   text-decoration: none;
+}
+
+.nav a:hover,
+.button:hover {
+  color: var(--on-surface);
+  background: #433f48;
 }
 
 .nav a[aria-current="page"],
 .button.primary {
-  border-color: rgba(215, 173, 85, 0.55);
-  color: #1a1408;
-  background: var(--gold);
+  color: var(--on-primary);
+  background: var(--primary);
 }
 
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--on-surface-variant);
+  font-size: 0.88rem;
+}
+
+.meta span {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface-low);
+}
+
+/* Cards match the Settings dialog: dark rounded panel with a thin outline. */
 .card {
-  margin-top: 18px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: linear-gradient(180deg, var(--surface-high), var(--surface));
-  box-shadow: 0 18px 44px var(--shadow);
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid rgba(111, 104, 111, 0.55);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
 
 .card h2 {
-  margin: 0 0 10px;
-  font-size: 1.28rem;
+  margin: 36px 0 10px;
+  color: var(--on-surface);
+  font-size: 1.3rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.card h2:first-child {
+  margin-top: 0;
 }
 
 .card h3 {
-  margin: 18px 0 8px;
-  font-size: 1.04rem;
+  margin: 22px 0 8px;
+  font-size: 1.05rem;
+  font-weight: 650;
 }
 
 .card p,
 .card li {
-  color: var(--muted);
-  line-height: 1.62;
+  color: var(--on-surface-variant);
+  line-height: 1.65;
 }
 
 .card p {
   margin: 10px 0;
 }
 
-.card ul {
-  margin: 10px 0 0;
-  padding-left: 20px;
+.card strong {
+  color: var(--on-surface);
+  font-weight: 650;
 }
 
+.card ul,
 .card ol {
-  padding-left: 20px;
+  margin: 10px 0;
+  padding-left: 22px;
 }
 
+.card li + li {
+  margin-top: 6px;
+}
+
+.card li::marker {
+  color: var(--primary);
+}
+
+.notice {
+  border-color: rgba(229, 185, 76, 0.45);
+  background: var(--primary-container);
+}
+
+.notice h2 {
+  color: var(--on-primary-container);
+}
+
+.notice p {
+  color: #f3e3bd;
+}
+
+/* The data table is drawn like the Settings list: stacked rows on a raised surface. */
 .table-scroll {
   max-width: 100%;
+  margin: 16px 0 8px;
   overflow-x: auto;
 }
 
 table {
   width: 100%;
   min-width: 580px;
-  border-collapse: collapse;
-  color: var(--muted);
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--on-surface-variant);
   line-height: 1.5;
 }
 
+/* Round the outer corner cells instead of clipping the table, which would clip the caption. */
+th,
+td {
+  background: var(--surface-highest);
+}
+
+thead th:first-child {
+  border-top-left-radius: 20px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 20px;
+}
+
+tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 20px;
+}
+
+tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 20px;
+}
+
 caption {
-  padding: 10px 0;
+  padding: 0 0 10px;
   text-align: left;
-  color: var(--text);
-  font-weight: 750;
+  color: var(--on-surface-variant);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 th,
 td {
-  padding: 10px;
-  border: 1px solid var(--line);
+  padding: 14px 16px;
   text-align: left;
   vertical-align: top;
 }
 
 th {
-  color: var(--text);
+  color: var(--on-surface);
+  background: var(--surface-high);
+  font-weight: 650;
+}
+
+tbody td {
+  border-top: 2px solid var(--surface);
+}
+
+td + td,
+th + th {
+  border-left: 2px solid var(--surface);
 }
 
 /* Keep each purpose, recipient and basis together on narrow screens. */
@@ -190,6 +385,10 @@ th {
     min-width: 0;
   }
 
+  .table-scroll td {
+    border-radius: 0 !important;
+  }
+
   .table-scroll thead {
     position: absolute;
     width: 1px;
@@ -201,8 +400,10 @@ th {
   }
 
   .table-scroll tbody tr {
-    margin-bottom: 16px;
-    border: 1px solid var(--line);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--surface-highest);
   }
 
   .table-scroll td {
@@ -210,53 +411,37 @@ th {
   }
 
   .table-scroll td + td {
-    border-top: 1px solid var(--line);
+    border-top: 2px solid var(--surface);
+    border-left: 0;
   }
 
   .table-scroll td::before {
     display: block;
     margin-bottom: 6px;
-    color: var(--text);
-    font-weight: 750;
+    color: var(--on-surface);
+    font-size: 0.8rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     content: attr(data-label);
   }
-}
-
-.notice {
-  border-color: rgba(215, 173, 85, 0.4);
-  background: var(--gold-soft);
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.meta span {
-  padding: 6px 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
 }
 
 .footer {
   margin-top: 28px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--on-surface-variant);
+  font-size: 0.88rem;
+  text-align: center;
 }
 
 @media (min-width: 700px) {
   .shell {
-    padding: 44px 30px 64px;
+    padding: 44px 32px 64px;
   }
 
   .card {
-    padding: 24px;
+    padding: 32px;
   }
 }
